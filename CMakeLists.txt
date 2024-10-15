@@ -25,21 +25,5 @@ set(EXTRA_LIBS ${EXTRA_LIBS} HD44780Lcd)
 
 #--------------------------------------------------------------------------
 
-add_executable(analog examples/analog.cxx examples/LinuxKeys.cxx)
-target_link_libraries(analog SSD1306)
-
-add_executable(clock examples/clock.cxx examples/LinuxKeys.cxx)
-target_link_libraries(clock SSD1306)
-
-add_executable(ipaddress examples/ipaddress.cxx examples/LinuxKeys.cxx)
-target_link_libraries(ipaddress SSD1306)
-
-add_executable(life examples/life.cxx examples/LinuxKeys.cxx)
-target_link_libraries(life SSD1306)
-
-add_executable(testbitmap examples/testbitmap.cxx examples/LinuxKeys.cxx)
-target_link_libraries(testbitmap SSD1306)
-
-add_executable(testoled examples/testoled.cxx examples/LinuxKeys.cxx)
-target_link_libraries(testoled SSD1306)
-
+add_executable(info examples/info.cpp examples/LinuxKeys.cxx)
+target_link_libraries(info SSD1306)
