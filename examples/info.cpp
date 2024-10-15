@@ -54,34 +54,16 @@ void showAddresses(SSD1306::OledI2C& oled);
 static void signalHandler(int signalNumber);
 
 int main(){
-    try
+    constexpr std::array<int, 2> signals{SIGINT, SIGTERM};
+    for (auto signal : signals)
     {
-        constexpr std::array<int, 2> signals{SIGINT, SIGTERM};
-
-        for (auto signal : signals)
-        {
-            if (std::signal(signal, signalHandler) == SIG_ERR)
-            {
-                std::string what{"installing "};
-                what += strsignal(signal);
-                what += " signal handler";
-
-                throw std::system_error(errno,
-                                        std::system_category(),
-                                        what);
-            }
-        }
-
         SSD1306::OledI2C oled{"/dev/i2c-1", 0x3C};
-
         while (run)
         {
             oled.clear();
             showTime(oled);
             showAddresses(oled);
             showUsers(oled);
-
-            
             oled.displayUpdate();
             constexpr auto oneSecond(std::chrono::seconds(1));
             std::this_thread::sleep_for(oneSecond);
@@ -90,11 +72,6 @@ int main(){
         oled.clear();
         oled.displayUpdate();
     }
-    catch (std::exception& e)
-    {
-        std::cerr << e.what() << "\n";
-    }
-
     return 0;
 }
 
@@ -106,65 +83,45 @@ void showUsers(SSD1306::OledI2C& oled) {
     std::string text;
     std::getline (File, text);
     File.close();
-
-
     if (text == "lucas ") {
         l = "Y";
         j = "Y";
     }
-    
     drawString8x16(SSD1306::OledPoint{0, 32}, "L: " + l, SSD1306::PixelStyle::Set, oled);
     drawString8x16(SSD1306::OledPoint{0, 46}, "J: " + j, SSD1306::PixelStyle::Set, oled);
 }
 
 void showTime(SSD1306::OledI2C& oled) {
-
     time_t now;
     time(&now);
     struct tm* tm = localtime(&now);
-
     char time[12];
-
     strftime(time, sizeof(time), "%l:%M:%S %P", tm);
-
     SSD1306::OledPoint location{0, 0};
-
     drawString8x16(location, time, SSD1306::PixelStyle::Set, oled);
-
 }
 
 void showAddresses(SSD1306::OledI2C& oled){
-
     struct ifaddrs *ifAddrStruct = NULL;
     getifaddrs(&ifAddrStruct);
-
     for (struct ifaddrs* ifa = ifAddrStruct; ifa != NULL ; ifa = ifa->ifa_next) {
-
         struct sockaddr* ifa_addr = ifa->ifa_addr;
         if (ifa_addr->sa_family == AF_INET)
         {
             // is a valid IP4 Address
-
             void *tmpAddrPtr = &((struct sockaddr_in *)ifa_addr)->sin_addr;
             char addressBuffer[INET_ADDRSTRLEN];
             inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
             std::string address;
-
             if (strncmp(ifa->ifa_name, "wlan", 4) == 0)
             {
                 address = "W";
             }
-            
-            
             address += addressBuffer;
-                SSD1306::OledPoint location{0, 16};
-
-                drawString8x16(location, address, SSD1306::PixelStyle::Set, oled);
-            
+            SSD1306::OledPoint location{0, 16};
+            drawString8x16(location, address, SSD1306::PixelStyle::Set, oled);
         }
     }
-
-
     if (ifAddrStruct != NULL)
     {
         freeifaddrs(ifAddrStruct);
