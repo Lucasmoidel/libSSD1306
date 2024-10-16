@@ -25,5 +25,5 @@ set(EXTRA_LIBS ${EXTRA_LIBS} HD44780Lcd)
 
 #--------------------------------------------------------------------------
 
-add_executable(info examples/main.cpp examples/time.cpp examples/ipaddress.cpp examples/users.cpp)
+add_executable(info main.cpp time.cpp ipaddress.cpp users.cpp)
 target_link_libraries(info SSD1306)
