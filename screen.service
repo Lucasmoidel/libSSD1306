@@ -1,0 +1,12 @@
+[Unit]
+Description=ssd1306 screen
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/root/info
+
+[Install]
+WantedBy=multi-user.target
