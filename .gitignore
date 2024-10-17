@@ -30,7 +30,7 @@
 # build
 
 build/
-
+.vscode/
 # other directories
 
 *_/
