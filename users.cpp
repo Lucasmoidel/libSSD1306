@@ -34,7 +34,7 @@ void showUsers(SSD1306::OledI2C& oled) {
     for (int i = 0; i < 3; i+=2){
         drawString8x12(SSD1306::OledPoint{0, y}, arr[i] + " ", SSD1306::PixelStyle::Set, oled);
         drawString8x12(SSD1306::OledPoint{((int)arr[i].length()+1) * 8, y}, arr[i+1], SSD1306::PixelStyle::Set, oled);
-        y+=13;
+        y+=12;
     }
 }
 
