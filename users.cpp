@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include "OledFont8x12.h"
+#include "OledFont8x8.h"
 #include "OledI2C.h"
 #include <ifaddrs.h>
 #include <sys/types.h>
@@ -28,13 +29,23 @@ void showUsers(SSD1306::OledI2C& oled) {
     std::string text;
     std::getline (File, text);
     File.close();
-    std::string arr[4];
+    int usrammount = 20;
+    std::string arr[usrammount];
     splitString(text, arr);
     int y = 32;
-    for (int i = 0; i < 3; i+=2){
+    for (int i = 0; i < 4; i+=2){
         drawString8x12(SSD1306::OledPoint{0, y}, arr[i] + " ", SSD1306::PixelStyle::Set, oled);
         drawString8x12(SSD1306::OledPoint{((int)arr[i].length()+1) * 8, y}, arr[i+1], SSD1306::PixelStyle::Set, oled);
         y+=12;
+    }
+    int count = 0;
+    for (int i = 0; i < usrammount; i++) {
+        if ( arr[i] != "") {
+            count++;
+        }
+    }
+    if (count > 4) {
+        drawString8x8(SSD1306::OledPoint{0, 64-8}, "+" + std::to_string(count-4), SSD1306::PixelStyle::Set, oled);
     }
 }
 
