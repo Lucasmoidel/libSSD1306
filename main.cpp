@@ -34,6 +34,9 @@ int main(){
         pinMode(17, INPUT);
         pinMode(27, OUTPUT);
         digitalWrite(27, HIGH);
+        pinMode(21, INPUT);
+        pinMode(20, OUTPUT);
+        digitalWrite(20, HIGH);
         constexpr std::array<int, 2> signals{SIGINT, SIGTERM};
         for (auto signal : signals)
         {
@@ -47,7 +50,12 @@ int main(){
         }
         SSD1306::OledI2C oled{"/dev/i2c-1", 0x3C};
         int t = 0;
+        bool shutting = false;
         while (run) {
+            if (digitalRead(21) && !shutting) {
+                system("shutdown");
+                shutting = true;
+            }
             if (digitalRead(17)) {
                 t = 10;
             }
