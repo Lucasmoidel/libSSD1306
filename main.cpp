@@ -19,6 +19,7 @@
 #include <arpa/inet.h>
 #include <sstream>  
 #include <fstream>
+#include <wiringPi.h>
 
 namespace { volatile static std::sig_atomic_t run = 1;}
 void showUsers(SSD1306::OledI2C& oled);
@@ -29,6 +30,10 @@ static void signalHandler(int signalNumber);
 int main(){
     try
     {
+        wiringPiSetupGpio();
+        pinMode(17, INPUT);
+        pinMode(27, OUTPUT);
+        digitalWrite(27, HIGH);
         constexpr std::array<int, 2> signals{SIGINT, SIGTERM};
         for (auto signal : signals)
         {
@@ -41,15 +46,27 @@ int main(){
             }
         }
         SSD1306::OledI2C oled{"/dev/i2c-1", 0x3C};
-        while (run)
-        {
+        int t = 0;
+        while (run) {
+            if (digitalRead(17)) {
+                t = 10;
+            }
+            while (t > 0) {
+                if (digitalRead(17)) {
+                    t = 10;
+                }
+                oled.clear();
+                showTime(oled);
+                showAddresses(oled);
+                showUsers(oled);
+                oled.displayUpdate();
+                constexpr auto oneSecond(std::chrono::seconds(1));
+                std::this_thread::sleep_for(oneSecond);
+                t--;
+            }
             oled.clear();
-            showTime(oled);
-            showAddresses(oled);
-            showUsers(oled);
             oled.displayUpdate();
-            constexpr auto oneSecond(std::chrono::seconds(1));
-            std::this_thread::sleep_for(oneSecond);
+
         }
         oled.clear();
         oled.displayUpdate();
