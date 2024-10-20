@@ -53,20 +53,38 @@ int main(){
         bool shutting = false;
         while (run) {
             if (digitalRead(21) && !shutting) {
+                std::cout << "shutting down" << std::endl;
                 system("shutdown");
                 shutting = true;
+                t = 60;
             }
-            if (digitalRead(17)) {
+            if (digitalRead(17) && !shutting) {
                 t = 10;
             }
             while (t > 0) {
-                if (digitalRead(17)) {
+                if (digitalRead(21) && !shutting) {
+                    std::cout << "shutting down" << std::endl;
+                    system("shutdown");
+                    shutting = true;
+                    t = 60;
+                }
+                if (digitalRead(17) && !shutting) {
                     t = 10;
                 }
+                if (digitalRead(17) && shutting) {
+                    system("shutdown -c");
+                    shutting = false;
+                    std::cout << "shutdown cancled" << std::endl;
+                }
                 oled.clear();
-                showTime(oled);
-                showAddresses(oled);
-                showUsers(oled);
+                if (shutting) {
+                    drawString8x16(SSD1306::OledPoint{0, 0}, "SHUTTING DOWN", SSD1306::PixelStyle::Set, oled);
+                    drawString8x16(SSD1306::OledPoint{0, 16}, std::to_string(t), SSD1306::PixelStyle::Set, oled);
+                } else {
+                    showTime(oled);
+                    showAddresses(oled);
+                    showUsers(oled);
+                }
                 oled.displayUpdate();
                 constexpr auto oneSecond(std::chrono::seconds(1));
                 std::this_thread::sleep_for(oneSecond);
