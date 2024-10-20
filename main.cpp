@@ -49,7 +49,7 @@ int main(){
             }
         }
         SSD1306::OledI2C oled{"/dev/i2c-1", 0x3C};
-        int t = 0;
+        int t = 10;
         bool shutting = false;
         while (run) {
             if (digitalRead(21) && !shutting) {
